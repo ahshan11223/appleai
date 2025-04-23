@@ -52,7 +52,26 @@ st.markdown("""
         border-radius: 1rem;
         box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
+    .ripening-note {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.6;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .ripening-note span {
+            font-weight: bold;
+            color: #6a0dad;
 </style>
+
+<div class="ripening-note">
+        <p><span>85</span> → Advanced ripening (almost mature / fully colored)</p>
+        <p><span>84</span> → Ripe stage</p>
+        <p><span>83</span> → Sugar level rises significantly</p>
+        <p><span>82</span> → Starch is rapidly breaking down into simple sugars</p>
+        <p><span>81</span> → Beginning of ripening (start of color change)</p>
+    </div>
 """, unsafe_allow_html=True)
 
 # --- Title and uploader ---
