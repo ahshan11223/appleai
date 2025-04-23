@@ -10,20 +10,27 @@ import warnings
 # Hide specific warnings
 warnings.filterwarnings("ignore")
 
-# Load models
+# Load models with cache
 @st.cache_resource
 def load_models():
-    yolo = YOLO('yolo_best.pt')  # Update path as needed
-    effnet = tf.keras.models.load_model('best_apple_model.h5')
+    yolo = YOLO('yolo_best.pt')  # Path to YOLOv8 model
+    effnet = tf.keras.models.load_model('best_apple_model.h5')  # Path to EfficientNet model
     return yolo, effnet
 
 yolo_model, efficientnet_model = load_models()
 class_id_map = [81, 82, 83, 84, 85]
+ripeness_info = {
+    81: "Beginning of ripening (start of color change)",
+    82: "Starch is rapidly breaking down into simple sugars",
+    83: "Sugar level rises significantly",
+    84: "Ripe stage",
+    85: "Advanced ripening (almost mature / fully colored)"
+}
 
-# --- Custom CSS for Tailwind-style vibes ---
+# --- Tailwind-style Custom CSS ---
 st.markdown("""
 <style>
-    html, body, [class*="css"]  {
+    html, body, [class*="css"] {
         font-family: 'Segoe UI', sans-serif;
         background-color: #f9fafb;
     }
@@ -35,10 +42,6 @@ st.markdown("""
     h1, h2, h3 {
         color: #1f2937;
         font-weight: 600;
-    }
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
     }
     .stButton>button {
         border-radius: 0.5rem;
@@ -53,36 +56,37 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
     .ripening-note {
-            background-color: #f9f9f9;
-            padding: 1rem;
-            border-radius: 12px;
-            font-size: 16px;
-            line-height: 1.6;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .ripening-note span {
-            font-weight: bold;
-            color: #6a0dad;
-            }
+        background-color: #f3f4f6;
+        padding: 1rem;
+        border-radius: 12px;
+        font-size: 16px;
+        line-height: 1.6;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .ripening-note span {
+        font-weight: bold;
+        color: #6a0dad;
+    }
 </style>
-
-
 """, unsafe_allow_html=True)
 
-# --- Title and uploader ---
+# --- Title & Description ---
 st.markdown("## 🍎 Apple Detector & Classifier")
 st.write("Upload an image to detect and classify apples using YOLO + EfficientNet.")
+
+# --- Ripening Legend ---
 with st.container():
     st.markdown("""
-<div class="ripening-note">
+    <div class="ripening-note">
         <p><span>85</span> → Advanced ripening (almost mature / fully colored)</p>
         <p><span>84</span> → Ripe stage</p>
         <p><span>83</span> → Sugar level rises significantly</p>
         <p><span>82</span> → Starch is rapidly breaking down into simple sugars</p>
         <p><span>81</span> → Beginning of ripening (start of color change)</p>
     </div>
-
     """, unsafe_allow_html=True)
+
+# --- File Upload ---
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
@@ -96,7 +100,7 @@ if uploaded_file is not None:
     image_np = np.array(image)
     st.image(image, caption='📷 Resized Input Image', use_container_width=True)
 
-    # Run detection
+    # Run YOLO detection
     with st.spinner("🔍 Detecting apples with YOLO..."):
         results = yolo_model(image_np)
     detections = results[0].boxes.xyxy.cpu().numpy()
@@ -105,7 +109,7 @@ if uploaded_file is not None:
         st.warning("No apples detected in the image.")
     else:
         st.markdown("### 🍏 Cropped Apples & Predictions")
-        cols = st.columns(3)
+        cols = st.columns(3)  # Side-by-side layout
 
         for i, box in enumerate(detections):
             x1, y1, x2, y2 = map(int, box)
@@ -116,15 +120,16 @@ if uploaded_file is not None:
             input_tensor = tf.keras.applications.efficientnet.preprocess_input(resized_img)
             input_tensor = np.expand_dims(input_tensor, axis=0)
 
-            # Predict
+            # Predict with EfficientNet
             with st.spinner("🧠 Classifying..."):
                 prediction = efficientnet_model.predict(input_tensor)
             class_index = np.argmax(prediction)
             class_id = class_id_map[class_index]
             confidence = np.max(prediction)
 
-            # Display side-by-side
             col = cols[i % len(cols)]
             with col:
                 st.image(cropped_img, caption=f"🍎 ID: {class_id} ({confidence:.2f})", use_container_width=True)
-                time.sleep(0.3)
+                st.markdown(f"**📝 Ripening Stage:** {ripeness_info[class_id]}")
+
+            time.sleep(0.2)  # smooth UI transition
