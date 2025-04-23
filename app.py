@@ -63,6 +63,7 @@ st.markdown("""
         .ripening-note span {
             font-weight: bold;
             color: #6a0dad;
+            }
 </style>
 
 
