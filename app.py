@@ -65,6 +65,14 @@ st.markdown("""
             color: #6a0dad;
 </style>
 
+
+""", unsafe_allow_html=True)
+
+# --- Title and uploader ---
+st.markdown("## 🍎 Apple Detector & Classifier")
+st.write("Upload an image to detect and classify apples using YOLO + EfficientNet.")
+with st.container():
+    st.markdown("""
 <div class="ripening-note">
         <p><span>85</span> → Advanced ripening (almost mature / fully colored)</p>
         <p><span>84</span> → Ripe stage</p>
@@ -72,12 +80,8 @@ st.markdown("""
         <p><span>82</span> → Starch is rapidly breaking down into simple sugars</p>
         <p><span>81</span> → Beginning of ripening (start of color change)</p>
     </div>
-""", unsafe_allow_html=True)
 
-# --- Title and uploader ---
-st.markdown("## 🍎 Apple Detector & Classifier")
-st.write("Upload an image to detect and classify apples using YOLO + EfficientNet.")
-
+    """, unsafe_allow_html=True)
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
