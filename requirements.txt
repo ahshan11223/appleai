@@ -1,7 +1,6 @@
 streamlit
-ultralytics
+onnxruntime
 tensorflow
 opencv-python-headless
-pillow
+Pillow
 numpy
-matplotlib
