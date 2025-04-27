@@ -1,3 +1,6 @@
+import os
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
+
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -6,6 +9,7 @@ from PIL import Image
 import onnxruntime as ort
 import time
 import warnings
+
 
 # Hide warnings
 warnings.filterwarnings("ignore")
