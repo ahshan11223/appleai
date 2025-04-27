@@ -1,14 +1,15 @@
 import os
 os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
 
+import numpy as np  # numpy must be before tensorflow sometimes
 import streamlit as st
 import tensorflow as tf
-import numpy as np
 import cv2
 from PIL import Image
 import onnxruntime as ort
 import time
 import warnings
+
 
 
 # Hide warnings
